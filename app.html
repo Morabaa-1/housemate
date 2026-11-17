@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HouseMate demo</title>
+<meta name="description" content="HouseMate demo: see what you owe, who you owe and who owes you for shared house bills. Demo only, no real money.">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --text: #16181d;
+  --muted: #4a505c;
+  --line: #e2e5ea;
+  --accent: #3f3cbb;
+  --accent-dark: #2f2c99;
+  --accent-soft: #eeeefc;
+  --red: #b42318;
+  --red-soft: #fef1f0;
+  --orange: #a3460a;
+  --orange-soft: #fff3e3;
+  --green: #067647;
+  --green-soft: #e8f8ef;
+  --radius: 16px;
+  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 2px 8px rgba(16,24,40,.05);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+}
+h1, h2, h3 { line-height: 1.25; margin: 0; }
+h2 { font-size: 23px; }
+h3 { font-size: 19px; }
+p { margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* Header */
+.top { background: var(--card); border-bottom: 1px solid var(--line); }
+.top-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; padding-bottom: 8px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; text-decoration: none; color: inherit; }
+.brand svg { width: 40px; height: 40px; flex: none; }
+.brand-name { display: block; font-weight: 800; font-size: 21px; }
+.house-name { display: block; color: var(--muted); font-size: 15px; }
+.who { padding-bottom: 14px; }
+.who label { display: block; font-weight: 700; margin-bottom: 4px; }
+.demo-bar { background: #fff8db; color: #5c4400; border-bottom: 1px solid #f1e3a6; font-size: 16px; font-weight: 600; padding: 8px 0; text-align: center; }
+
+/* Controls */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 10px 18px; border-radius: 12px; border: 2px solid transparent;
+  font-weight: 700; font-size: 18px; cursor: pointer; text-align: center; text-decoration: none; line-height: 1.2;
+}
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.primary:hover { background: var(--accent-dark); }
+.btn.ghost { background: var(--card); color: var(--accent); border-color: #c9c8f0; }
+.btn.ghost:hover { background: var(--accent-soft); }
+.btn.green { background: var(--green); color: #fff; }
+.btn.small { min-height: 48px; padding: 8px 14px; font-size: 17px; }
+.btn.block { display: flex; width: 100%; }
+.btn.reset { font-size: 16px; padding: 8px 12px; flex: none; }
+select, input[type=text], input[type=date], input[inputmode] {
+  width: 100%; min-height: 52px; padding: 10px 12px; font-size: 18px;
+  border: 2px solid #b9bec8; border-radius: 12px; background: #fff;
+}
+select { appearance: none; -webkit-appearance: none; padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2316181d' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; }
+.big-select { font-weight: 700; font-size: 20px; border-color: var(--accent); }
+
+/* Layout */
+main { padding-top: 18px; padding-bottom: 32px; }
+section { margin-bottom: 30px; }
+.section-head { margin-bottom: 12px; }
+.section-head p { color: var(--muted); margin-top: 4px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; margin-bottom: 14px; }
+
+/* Balance */
+.balance .label { font-size: 20px; font-weight: 700; }
+.big-num { font-size: 50px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; margin: 4px 0 6px; }
+.red { color: var(--red); }
+.green-text { color: var(--green); }
+.balance .sub { color: var(--muted); }
+.owed-line { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 19px; }
+.owed-line b { color: var(--green); }
+.next { background: var(--accent-soft); border-color: #d6d5f6; }
+.next h2 { font-size: 18px; text-transform: none; color: var(--accent-dark); margin-bottom: 4px; }
+.next p { font-size: 19px; font-weight: 600; }
+
+/* Person lists */
+.card > h2 { margin-bottom: 4px; }
+.card-sub { color: var(--muted); margin-bottom: 10px; }
+.person { border-top: 1px solid var(--line); padding: 12px 0 4px; }
+.person:first-of-type { border-top: 0; }
+.person-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; flex: none; color: #fff; }
+.pname { font-weight: 700; font-size: 20px; flex: 1; min-width: 0; }
+.pamt { font-weight: 800; font-size: 21px; }
+.share-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 8px 0 10px 50px; }
+.share-what { flex: 1 1 100px; min-width: 0; }
+.share-what small { display: block; color: var(--muted); font-size: 15px; }
+.share-amt { font-weight: 700; }
+.share-act { flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.empty { color: var(--muted); padding: 6px 0; }
+
+/* Status pills */
+.pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 3px 10px 3px 7px; font-size: 15px; font-weight: 700; white-space: nowrap; }
+.pill svg { width: 16px; height: 16px; flex: none; }
+.pill-unpaid { background: var(--red-soft); color: var(--red); }
+.pill-awaiting { background: var(--orange-soft); color: var(--orange); }
+.pill-paid { background: var(--green-soft); color: var(--green); }
+.pill-own { background: #eef0f3; color: var(--muted); }
+
+/* Overview */
+.grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.mate { margin: 0; }
+.mate-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.you-tag { font-size: 15px; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 2px 10px; }
+.mate dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; }
+.mate dt { color: var(--muted); }
+.mate dd { margin: 0; font-weight: 700; text-align: right; }
+
+/* Bills */
+.bill { padding: 16px; }
+.bill-head { display: flex; align-items: flex-start; gap: 12px; }
+.bill-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.bill-icon svg { width: 24px; height: 24px; }
+.bill-title { flex: 1; min-width: 0; }
+.bill-title p { color: var(--muted); font-size: 16px; }
+.bill-total { font-weight: 800; font-size: 20px; }
+.split-line { margin: 10px 0 6px; background: #f3f4f6; border-radius: 10px; padding: 8px 12px; font-size: 16px; }
+.bill-shares { list-style: none; margin: 0; padding: 0; }
+.bill-shares li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 7px 0; border-top: 1px solid var(--line); }
+.bill-shares li:first-child { border-top: 0; }
+.bs-name { flex: 1 1 90px; font-weight: 600; }
+.bs-amt { font-weight: 700; min-width: 72px; text-align: right; }
+
+/* Form */
+.field { border: 0; margin: 0 0 18px; padding: 0; min-width: 0; }
+.field > label, .field legend { display: block; font-weight: 700; margin-bottom: 6px; padding: 0; }
+.hint { color: var(--muted); font-size: 16px; margin-bottom: 8px; }
+.type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.choice { position: relative; display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 10px 12px; border: 2px solid #b9bec8; border-radius: 12px; cursor: pointer; background: #fff; font-weight: 600; }
+.choice input { width: 24px; height: 24px; margin: 0; flex: none; accent-color: var(--accent); }
+.choice.on { border-color: var(--accent); background: var(--accent-soft); }
+.check-list { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.money-input { position: relative; }
+.money-input span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-weight: 700; }
+.money-input input { padding-left: 34px; font-weight: 700; }
+.err { color: var(--red); font-weight: 700; font-size: 16px; margin-top: 6px; }
+.err:empty { display: none; }
+.has-err input, .has-err .choice { border-color: var(--red); }
+.preview { background: var(--green-soft); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; font-size: 17px; }
+.preview:empty { display: none; }
+.preview ul { margin: 6px 0 0; padding-left: 20px; }
+.form-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.form-btns .btn { flex: 1 1 140px; }
+.notice { border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-weight: 600; }
+.notice.ok { background: var(--green-soft); color: #05603a; }
+.notice:empty { display: none; }
+
+/* Payments */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip { min-height: 48px; border-radius: 999px; padding: 8px 16px; border: 2px solid #b9bec8; background: #fff; font-weight: 700; font-size: 16px; cursor: pointer; }
+.chip[aria-pressed=true] { background: var(--text); color: #fff; border-color: var(--text); }
+.pay-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 12px 0; border-top: 1px solid var(--line); }
+.pay-row:first-child { border-top: 0; }
+.pay-text { flex: 1 1 200px; min-width: 0; }
+.pay-text small { display: block; color: var(--muted); font-size: 15px; }
+
+/* CTA + footer */
+.cta { text-align: center; padding: 26px 18px; }
+.cta p { color: var(--muted); margin: 8px 0 16px; }
+.cta-msg { margin-top: 14px; font-size: 20px; font-weight: 800; color: var(--green); }
+.cta-msg:empty { display: none; }
+footer { border-top: 1px solid var(--line); background: var(--card); padding: 24px 0 40px; color: var(--muted); font-size: 16px; }
+footer p { margin-bottom: 10px; }
+footer strong { color: var(--text); }
+footer a { color: var(--accent); font-weight: 700; }
+
+/* Modal + toast */
+.modal { position: fixed; inset: 0; background: rgba(16,18,29,.5); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 20; }
+.modal[hidden] { display: none; }
+.modal-box { background: #fff; border-radius: 18px; padding: 22px; width: 100%; max-width: 440px; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+.modal-box h2 { font-size: 22px; margin-bottom: 8px; }
+.modal-box p { color: var(--muted); margin-bottom: 18px; }
+.modal-btns { display: flex; flex-wrap: wrap-reverse; gap: 10px; }
+.modal-btns .btn { flex: 1 1 140px; }
+.toast { position: fixed; left: 16px; right: 16px; bottom: 16px; max-width: 520px; margin: 0 auto; background: #16181d; color: #fff; padding: 14px 16px; border-radius: 14px; font-weight: 600; box-shadow: 0 8px 30px rgba(0,0,0,.3); z-index: 30; }
+.toast:empty { display: none; }
+
+@media (min-width: 640px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+  .check-list { grid-template-columns: 1fr 1fr; }
+  .type-grid { grid-template-columns: repeat(4, 1fr); }
+  .share-act { flex: 0 1 auto; min-width: 0; justify-content: flex-end; }
+  .big-num { font-size: 58px; }
+}
+@media (min-width: 900px) {
+  .wrap { max-width: 880px; }
+  .money-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-row">
+    <a class="brand" href="index.html" aria-label="HouseMate home page">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#3f3cbb"/><path d="M9 19.5 20 11l11 8.5V29a1.5 1.5 0 0 1-1.5 1.5H24v-7h-8v7h-5.5A1.5 1.5 0 0 1 9 29z" fill="#fff"/></svg>
+      <span><span class="brand-name">HouseMate</span><span class="house-name">Our Rathmines House</span></span>
+    </a>
+    <button type="button" class="btn ghost reset" data-act="reset">Reset demo</button>
+  </div>
+  <div class="wrap who">
+    <label for="me">Who are you?</label>
+    <select id="me" class="big-select"></select>
+  </div>
+</header>
+<div class="demo-bar"><div class="wrap">Demo only. No real money. All names and amounts are made up.</div></div>
+
+<main class="wrap">
+
+  <!-- 2. My money -->
+  <section id="my-money" aria-labelledby="mm-title">
+    <h1 id="mm-title" class="sr-only">My money</h1>
+    <div class="card balance">
+      <p class="label">You owe</p>
+      <p class="big-num" id="owe-total">€0.00</p>
+      <p class="sub" id="owe-sub"></p>
+      <p class="owed-line" id="owed-line"></p>
+    </div>
+    <div class="card next" id="next-card">
+      <h2>What to do now</h2>
+      <p id="next-text"></p>
+    </div>
+    <div class="money-cols">
+      <div class="card" id="owe-card">
+        <h2>Who I owe</h2>
+        <p class="card-sub">Tap "I've paid" after you send the money.</p>
+        <div id="owe-list"></div>
+      </div>
+      <div class="card" id="owed-card">
+        <h2>Who owes me</h2>
+        <p class="card-sub">Tap "Confirm received" when the money arrives.</p>
+        <div id="owed-list"></div>
+      </div>
+    </div>
+    <button type="button" class="btn primary block" data-act="open-form">+ Add a bill</button>
+  </section>
+
+  <!-- 3. House overview -->
+  <section id="house" aria-labelledby="house-title">
+    <div class="section-head">
+      <h2 id="house-title">The whole house</h2>
+      <p>Everyone's money at a glance.</p>
+    </div>
+    <div class="grid" id="house-grid"></div>
+  </section>
+
+  <!-- 4. Household bills -->
+  <section id="bills" aria-labelledby="bills-title">
+    <div class="section-head">
+      <h2 id="bills-title">Household bills</h2>
+      <p>Every bill and how it was split. Newest first.</p>
+    </div>
+    <div id="bill-list"></div>
+    <button type="button" class="btn ghost block" id="more-bills" data-act="more-bills" hidden></button>
+  </section>
+
+  <!-- 5. Add a bill -->
+  <section id="add" aria-labelledby="add-title">
+    <div class="section-head">
+      <h2 id="add-title">Add a bill</h2>
+      <p>HouseMate splits it equally for you.</p>
+    </div>
+    <p class="notice ok" id="add-ok" role="status"></p>
+    <button type="button" class="btn primary block" id="open-form-btn" data-act="open-form">+ Add a bill</button>
+    <form id="bill-form" class="card" novalidate hidden>
+      <fieldset class="field" id="fs-type">
+        <legend>What is the bill for?</legend>
+        <div class="type-grid" id="type-grid"></div>
+        <p class="err" id="err-type"></p>
+      </fieldset>
+      <div class="field" id="note-field" hidden>
+        <label for="f-note">What was it? (optional)</label>
+        <input type="text" id="f-note" maxlength="30" placeholder="For example: cleaning things">
+      </div>
+      <div class="field" id="fs-amount">
+        <label for="f-amount">Total amount</label>
+        <div class="money-input"><span aria-hidden="true">€</span><input id="f-amount" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-describedby="err-amount"></div>
+        <p class="err" id="err-amount"></p>
+      </div>
+      <div class="field">
+        <label for="f-payer">Who paid the bill?</label>
+        <select id="f-payer"></select>
+      </div>
+      <div class="field" id="fs-date">
+        <label for="f-date">Date of the bill</label>
+        <input type="date" id="f-date" aria-describedby="err-date">
+        <p class="err" id="err-date"></p>
+      </div>
+      <fieldset class="field" id="fs-shared">
+        <legend>Who shares this bill?</legend>
+        <p class="hint">Everyone is ticked. Untick anyone who does not share it.</p>
+        <div class="check-list" id="share-checks"></div>
+        <p class="err" id="err-shared"></p>
+      </fieldset>
+      <div class="preview" id="preview" aria-live="polite"></div>
+      <div class="form-btns">
+        <button type="submit" class="btn primary">Add bill</button>
+        <button type="button" class="btn ghost" data-act="close-form">Cancel</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 6. Payment activity -->
+  <section id="payments" aria-labelledby="pay-title">
+    <div class="section-head">
+      <h2 id="pay-title">Payments</h2>
+      <p>Every share, by status.</p>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Show payments by status"></div>
+    <div class="card" id="pay-list"></div>
+  </section>
+
+  <!-- 7. Call to action -->
+  <section id="join" aria-labelledby="join-title">
+    <div class="card cta">
+      <h2 id="join-title">Want HouseMate for your house?</h2>
+      <p>No more chasing housemates on WhatsApp.</p>
+      <button type="button" class="btn primary" data-act="join">Join this house</button>
+      <p class="cta-msg" id="join-msg" role="status"></p>
+    </div>
+  </section>
+</main>
+
+<!-- 8. Footer -->
+<footer>
+  <div class="wrap">
+    <p><strong>HouseMate is a demonstration prototype. No real payments are processed.</strong></p>
+    <p>Not approved by NCI: this is an independent student prototype.</p>
+    <p>Bank-grade security is not claimed: this demo uses local browser storage and does not process payments.</p>
+    <p>Your changes are saved in this browser only. They do not appear on other phones. Tap "Reset demo" to start again.</p>
+    <p><a href="index.html">About HouseMate</a></p>
+  </div>
+</footer>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-text">
+  <div class="modal-box">
+    <h2 id="modal-title"></h2>
+    <p id="modal-text"></p>
+    <div class="modal-btns">
+      <button type="button" class="btn ghost" id="modal-no">Cancel</button>
+      <button type="button" class="btn primary" id="modal-yes">Yes</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Fixed data ---------- */
+  var PEOPLE = ['Alex', 'Sam', 'Maria', 'James', 'Emma'];
+  var COLORS = { Alex: '#2563a8', Sam: '#3f3cbb', Maria: '#9c2a6b', James: '#0f766e', Emma: '#a3460a' };
+  var TYPES = ['Electricity', 'Gas', 'Broadband', 'Other'];
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var KEY = 'housemate-demo-v1';
+  var MAX_CENTS = 500000;
+  var BILLS_SHOWN = 4;
+
+  var ICONS = {
+    Electricity: '<path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12z"/>',
+    Gas: '<path d="M12 2.5c.8 3 4.8 5.2 4.8 10.2a4.8 4.8 0 0 1-9.6 0c0-2.8 1.8-4 2.2-6.6 1 .9 1.7 2 1.8 3.6 1-1.8 1.2-4.2.8-7.2z"/>',
+    Broadband: '<path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.8 16a4.8 4.8 0 0 1 6.4 0"/><circle cx="12" cy="19.3" r="1.1" fill="currentColor"/>',
+    Other: '<path d="M3.5 7.5 12 3.5l8.5 4v9L12 20.5l-8.5-4zM3.5 7.5 12 11.5l8.5-4M12 11.5v9"/>'
+  };
+  var STATUS = {
+    unpaid: { text: 'Not paid', icon: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.3"/>' },
+    awaiting: { text: 'Awaiting confirmation', icon: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>' },
+    paid: { text: 'Paid', icon: '<path d="M5 12.5l4.5 4.5L19 7.5"/>' },
+    own: { text: 'Paid the bill', icon: '<path d="M4 11 12 4.5l8 6.5v8.5H4z"/>' }
+  };
+
+  /* ---------- Money helpers (everything is in cents) ---------- */
+  function eur(c) {
+    var whole = Math.floor(c / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    var r = c % 100;
+    return '€' + whole + '.' + (r < 10 ? '0' : '') + r;
+  }
+  function parseAmount(str) {
+    var s = String(str || '').replace(/\s/g, '').replace(/^€/, '').replace(',', '.');
+    if (s === '') return { err: 'empty' };
+    if (!/^\d{1,6}(\.\d{1,2})?$/.test(s) && !/^\d{1,6}\.$/.test(s)) return { err: 'bad' };
+    var p = s.split('.');
+    var cents = parseInt(p[0], 10) * 100 + (p[1] ? parseInt((p[1] + '0').slice(0, 2), 10) : 0);
+    if (cents <= 0) return { err: 'zero' };
+    if (cents > MAX_CENTS) return { err: 'big' };
+    return { cents: cents };
+  }
+  function ordered(list) {
+    var out = [];
+    for (var i = 0; i < PEOPLE.length; i++) if (list.indexOf(PEOPLE[i]) !== -1) out.push(PEOPLE[i]);
+    return out;
+  }
+  /* Equal split in cents. Shares always add up to the total.
+     Leftover cents: the payer takes them if they share the bill,
+     otherwise one extra cent each to sharers in list order. */
+  function split(totalCents, people, payer) {
+    var who = ordered(people);
+    var n = who.length;
+    var base = Math.floor(totalCents / n);
+    var rem = totalCents - base * n;
+    var shares = [];
+    var payerIn = who.indexOf(payer) !== -1;
+    for (var i = 0; i < n; i++) {
+      var c = base;
+      if (payerIn) { if (who[i] === payer) c += rem; }
+      else if (i < rem) c += 1;
+      shares.push({ who: who[i], c: c });
+    }
+    return shares;
+  }
+
+  /* ---------- Dates ---------- */
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function todayISO() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function fmtDate(iso, withYear) {
+    var p = String(iso).split('-');
+    var s = parseInt(p[2], 10) + ' ' + MONTHS[parseInt(p[1], 10) - 1];
+    return withYear ? s + ' ' + p[0] : s;
+  }
+
+  /* ---------- Sample data ---------- */
+  function makeBill(id, type, note, totalCents, payer, date, people, statuses) {
+    var shares = split(totalCents, people, payer);
+    for (var i = 0; i < shares.length; i++) {
+      var w = shares[i].who;
+      shares[i].st = w === payer ? 'own' : (statuses[w] || 'unpaid');
+    }
+    return { id: id, type: type, note: note, total: totalCents, payer: payer, date: date, shares: shares };
+  }
+  function sampleState() {
+    var ALL = PEOPLE.slice();
+    return {
+      v: 1, me: 'Sam', nextId: 9,
+      bills: [
+        makeBill(1, 'Broadband', '', 6000, 'Sam', '2026-09-20', ALL, { Alex: 'paid', Maria: 'paid', James: 'paid', Emma: 'paid' }),
+        makeBill(2, 'Electricity', '', 14500, 'Alex', '2026-09-28', ALL, { Sam: 'paid', Maria: 'paid', James: 'paid', Emma: 'awaiting' }),
+        makeBill(3, 'Gas', '', 9250, 'Maria', '2026-10-05', ALL, { Alex: 'paid', James: 'paid' }),
+        makeBill(4, 'Other', 'Cleaning things', 2700, 'Emma', '2026-10-14', ['Sam', 'Maria', 'Emma'], { Sam: 'awaiting', Maria: 'paid' }),
+        makeBill(5, 'Broadband', '', 6000, 'Sam', '2026-10-20', ALL, { Alex: 'paid', Maria: 'awaiting' }),
+        makeBill(6, 'Electricity', '', 16340, 'James', '2026-10-30', ALL, { Maria: 'awaiting' }),
+        makeBill(7, 'Gas', '', 10120, 'Alex', '2026-11-06', ['Alex', 'Sam', 'Maria', 'James'], { James: 'awaiting' }),
+        makeBill(8, 'Other', 'Bin collection', 4000, 'James', '2026-11-10', ALL, { Emma: 'paid' })
+      ]
+    };
+  }
+
+  /* ---------- Storage (localStorage, safe if blocked) ---------- */
+  function validState(s) {
+    if (!s || s.v !== 1 || PEOPLE.indexOf(s.me) === -1 || !s.bills || typeof s.bills.length !== 'number') return false;
+    for (var i = 0; i < s.bills.length; i++) {
+      var b = s.bills[i];
+      if (!b || !b.shares || PEOPLE.indexOf(b.payer) === -1 || typeof b.total !== 'number') return false;
+    }
+    return true;
+  }
+  function load() {
+    try {
+      var raw = window.localStorage.getItem(KEY);
+      if (raw) { var s = JSON.parse(raw); if (validState(s)) return s; }
+    } catch (e) {}
+    return sampleState();
+  }
+  function save() {
+    try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  var state = load();
+  var payFilter = 'unpaid';
+  var showAllBills = false;
+
+  /* ---------- Calculations ---------- */
+  function billById(id) {
+    for (var i = 0; i < state.bills.length; i++) if (state.bills[i].id === id) return state.bills[i];
+    return null;
+  }
+  function shareOf(bill, who) {
+    for (var i = 0; i < bill.shares.length; i++) if (bill.shares[i].who === who) return bill.shares[i];
+    return null;
+  }
+  function billsNewestFirst() {
+    var list = state.bills.slice();
+    list.sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : b.id - a.id; });
+    return list;
+  }
+  /* Open (not confirmed) shares between people. mode 'owe': what `me` owes, grouped by payer.
+     mode 'owed': what others owe `me`, grouped by debtor. No debt cancellation (by design). */
+  function groups(me, mode) {
+    var map = {}, list = billsNewestFirst();
+    for (var i = 0; i < list.length; i++) {
+      var b = list[i];
+      for (var j = 0; j < b.shares.length; j++) {
+        var s = b.shares[j];
+        if (s.st !== 'unpaid' && s.st !== 'awaiting') continue;
+        var key = null;
+        if (mode === 'owe' && s.who === me && b.payer !== me) key = b.payer;
+        if (mode === 'owed' && b.payer === me && s.who !== me) key = s.who;
+        if (!key) continue;
+        if (!map[key]) map[key] = { who: key, total: 0, awaiting: 0, items: [] };
+        map[key].total += s.c;
+        if (s.st === 'awaiting') map[key].awaiting += s.c;
+        map[key].items.push({ bill: b, share: s });
+      }
+    }
+    var out = [];
+    for (var p = 0; p < PEOPLE.length; p++) if (map[PEOPLE[p]]) out.push(map[PEOPLE[p]]);
+    out.sort(function (a, b) { return b.total - a.total; });
+    return out;
+  }
+  function sumOf(gs, field) { var t = 0; for (var i = 0; i < gs.length; i++) t += gs[i][field]; return t; }
+  function openShareCount(who) {
+    var n = 0;
+    for (var i = 0; i < state.bills.length; i++) {
+      var s = shareOf(state.bills[i], who);
+      if (s && (s.st === 'unpaid' || s.st === 'awaiting')) n++;
+    }
+    return n;
+  }
+
+  /* ---------- Small render helpers ---------- */
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function svg(paths, cls) {
+    return '<svg class="' + (cls || '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths + '</svg>';
+  }
+  function pill(st) { return '<span class="pill pill-' + st + '">' + svg(STATUS[st].icon) + STATUS[st].text + '</span>'; }
+  function avatar(name) { return '<span class="avatar" style="background:' + COLORS[name] + '" aria-hidden="true">' + name.charAt(0) + '</span>'; }
+  function billLabel(b) { return b.type === 'Other' && b.note ? b.note : b.type; }
+  function joinNames(arr) {
+    if (arr.length < 2) return arr.join('');
+    return arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
+  }
+  function peopleWord(n) { return n === 1 ? '1 person' : n + ' people'; }
+  function byId(id) { return document.getElementById(id); }
+
+  /* ---------- Render ---------- */
+  function renderMyMoney() {
+    var me = state.me;
+    var owe = groups(me, 'owe');
+    var owed = groups(me, 'owed');
+    var oweTotal = sumOf(owe, 'total');
+    var oweAwaiting = sumOf(owe, 'awaiting');
+    var owedTotal = sumOf(owed, 'total');
+
+    var big = byId('owe-total');
+    big.textContent = eur(oweTotal);
+    big.className = 'big-num ' + (oweTotal > 0 ? 'red' : 'green-text');
+
+    var sub = oweTotal > 0 ? 'You owe ' + peopleWord(owe.length) + '.' : 'You are all paid up.';
+    if (oweAwaiting > 0) sub += ' ' + eur(oweAwaiting) + ' of this is waiting to be confirmed.';
+    byId('owe-sub').textContent = sub;
+    byId('owed-line').innerHTML = owedTotal > 0
+      ? 'People owe you <b>' + eur(owedTotal) + '</b>'
+      : 'Nobody owes you money right now.';
+
+    // What to do now
+    var next = '';
+    var toConfirm = null;
+    for (var i = 0; i < owed.length && !toConfirm; i++) {
+      for (var j = 0; j < owed[i].items.length; j++) if (owed[i].items[j].share.st === 'awaiting') { toConfirm = owed[i].items[j]; break; }
+    }
+    var toPay = null;
+    for (i = 0; i < owe.length; i++) if (owe[i].total - owe[i].awaiting > 0) { toPay = owe[i]; break; }
+    if (toConfirm) next = toConfirm.share.who + ' says they paid you ' + eur(toConfirm.share.c) + ' for ' + billLabel(toConfirm.bill) + '. Check, then tap "Confirm received".';
+    else if (toPay) next = 'Pay ' + toPay.who + ' ' + eur(toPay.total - toPay.awaiting) + '. Then tap "I\'ve paid".';
+    else if (oweAwaiting > 0) next = 'Nothing to do. You are waiting for people to confirm your payments.';
+    else if (owedTotal > 0) next = 'Nothing to do. You are waiting for ' + peopleWord(owed.length) + ' to pay you.';
+    else next = 'Nothing to do. Everything is paid.';
+    byId('next-text').textContent = next;
+
+    byId('owe-list').innerHTML = owe.length ? personList(owe, 'owe') : '<p class="empty">You don\'t owe anyone. Nice!</p>';
+    byId('owed-list').innerHTML = owed.length ? personList(owed, 'owed') : '<p class="empty">Nobody owes you right now.</p>';
+  }
+
+  function personList(gs, mode) {
+    var h = '';
+    for (var i = 0; i < gs.length; i++) {
+      var g = gs[i];
+      h += '<div class="person"><div class="person-head">' + avatar(g.who) +
+        '<span class="pname">' + g.who + '</span><span class="pamt ' + (mode === 'owe' ? 'red' : 'green-text') + '">' + eur(g.total) + '</span></div>';
+      for (var j = 0; j < g.items.length; j++) {
+        var it = g.items[j], b = it.bill, s = it.share, act = '';
+        if (mode === 'owe') {
+          act = s.st === 'unpaid'
+            ? '<button type="button" class="btn primary small" data-act="paid" data-bill="' + b.id + '" data-who="' + s.who + '">I\'ve paid</button>'
+            : pill('awaiting') + '<small>Waiting for ' + b.payer + ' to confirm</small>';
+        } else {
+          act = s.st === 'awaiting'
+            ? pill('awaiting') + '<button type="button" class="btn green small" data-act="confirm" data-bill="' + b.id + '" data-who="' + s.who + '">Confirm received</button>'
+            : pill('unpaid');
+        }
+        h += '<div class="share-row"><span class="share-what">' + esc(billLabel(b)) + '<small>' + fmtDate(b.date, true) + '</small></span>' +
+          '<span class="share-amt">' + eur(s.c) + '</span><span class="share-act">' + act + '</span></div>';
+      }
+      h += '</div>';
+    }
+    return h;
+  }
+
+  function renderHouse() {
+    var h = '';
+    for (var i = 0; i < PEOPLE.length; i++) {
+      var p = PEOPLE[i];
+      var oweT = sumOf(groups(p, 'owe'), 'total');
+      var owedT = sumOf(groups(p, 'owed'), 'total');
+      var n = openShareCount(p);
+      h += '<div class="card mate"><div class="mate-head">' + avatar(p) + '<h3>' + p + '</h3>' +
+        (p === state.me ? '<span class="you-tag">You</span>' : '') + '</div><dl>' +
+        '<dt>Owes</dt><dd class="' + (oweT ? 'red' : '') + '">' + eur(oweT) + '</dd>' +
+        '<dt>Is owed</dt><dd class="' + (owedT ? 'green-text' : '') + '">' + eur(owedT) + '</dd>' +
+        '<dt>Shares not paid</dt><dd>' + n + '</dd></dl></div>';
+    }
+    byId('house-grid').innerHTML = h;
+  }
+
+  function renderBills() {
+    var list = billsNewestFirst();
+    var shown = showAllBills ? list : list.slice(0, BILLS_SHOWN);
+    var h = '';
+    for (var i = 0; i < shown.length; i++) {
+      var b = shown[i];
+      var n = b.shares.length;
+      var minC = b.shares[0].c, maxC = b.shares[0].c;
+      for (var k = 1; k < n; k++) { if (b.shares[k].c < minC) minC = b.shares[k].c; if (b.shares[k].c > maxC) maxC = b.shares[k].c; }
+      var splitText = eur(b.total) + ' shared by ' + peopleWord(n) + ' = ' + eur(minC) + ' each.';
+      if (minC !== maxC) splitText = eur(b.total) + ' shared by ' + peopleWord(n) + '. Shares are ' + eur(minC) + ' or ' + eur(maxC) + ', so the total adds up exactly.';
+      if (!shareOf(b, b.payer)) splitText += ' ' + b.payer + ' paid but does not share this bill.';
+      h += '<article class="card bill"><div class="bill-head"><span class="bill-icon">' + svg(ICONS[b.type]) + '</span>' +
+        '<div class="bill-title"><h3>' + esc(billLabel(b)) + '</h3><p>' + fmtDate(b.date, true) + ' &middot; Paid by ' + b.payer + '</p></div>' +
+        '<p class="bill-total">' + eur(b.total) + '</p></div>' +
+        '<p class="split-line">' + splitText + '</p><ul class="bill-shares">';
+      for (var j = 0; j < n; j++) {
+        var s = b.shares[j];
+        h += '<li><span class="bs-name">' + s.who + (s.who === state.me ? ' (you)' : '') + '</span><span class="bs-amt">' + eur(s.c) + '</span>' + pill(s.st) + '</li>';
+      }
+      h += '</ul></article>';
+    }
+    byId('bill-list').innerHTML = h;
+    var more = byId('more-bills');
+    if (list.length > BILLS_SHOWN) {
+      more.hidden = false;
+      more.textContent = showAllBills ? 'Show fewer bills' : 'Show all ' + list.length + ' bills';
+    } else more.hidden = true;
+  }
+
+  function renderPayments() {
+    var counts = { unpaid: 0, awaiting: 0, paid: 0 }, rows = [], list = billsNewestFirst();
+    for (var i = 0; i < list.length; i++) {
+      for (var j = 0; j < list[i].shares.length; j++) {
+        var s = list[i].shares[j];
+        if (s.st === 'own') continue;
+        counts[s.st]++;
+        if (s.st === payFilter) rows.push({ bill: list[i], share: s });
+      }
+    }
+    var filters = ['unpaid', 'awaiting', 'paid'], ch = '';
+    for (i = 0; i < filters.length; i++) {
+      var f = filters[i];
+      ch += '<button type="button" class="chip" data-act="filter" data-f="' + f + '" aria-pressed="' + (f === payFilter) + '">' + STATUS[f].text + ' (' + counts[f] + ')</button>';
+    }
+    byId('chips').innerHTML = ch;
+
+    var h = '';
+    for (i = 0; i < rows.length; i++) {
+      var b = rows[i].bill, sh = rows[i].share, act = '';
+      var who = sh.who === state.me ? 'You' : sh.who;
+      var to = b.payer === state.me ? 'you' : b.payer;
+      var text = sh.st === 'paid' ? who + ' paid ' + to + ' ' + eur(sh.c) : who + ' ' + (who === 'You' ? 'owe ' : 'owes ') + to + ' ' + eur(sh.c);
+      if (sh.st === 'unpaid' && sh.who === state.me) act = '<button type="button" class="btn primary small" data-act="paid" data-bill="' + b.id + '" data-who="' + sh.who + '">I\'ve paid</button>';
+      else if (sh.st === 'awaiting' && b.payer === state.me) act = '<button type="button" class="btn green small" data-act="confirm" data-bill="' + b.id + '" data-who="' + sh.who + '">Confirm received</button>';
+      else act = pill(sh.st);
+      h += '<div class="pay-row"><span class="pay-text"><b>' + esc(text) + '</b><small>' + esc(billLabel(b)) + ' &middot; ' + fmtDate(b.date, true) + '</small></span>' + act + '</div>';
+    }
+    if (!rows.length) h = '<p class="empty">Nothing here right now.</p>';
+    byId('pay-list').innerHTML = h;
+  }
+
+  function renderSelectors() {
+    var opts = '';
+    for (var i = 0; i < PEOPLE.length; i++) opts += '<option value="' + PEOPLE[i] + '">' + PEOPLE[i] + '</option>';
+    var me = byId('me');
+    if (!me.options.length) me.innerHTML = opts;
+    me.value = state.me;
+    var payer = byId('f-payer');
+    if (!payer.options.length) payer.innerHTML = opts;
+  }
+
+  function render() {
+    renderSelectors();
+    renderMyMoney();
+    renderHouse();
+    renderBills();
+    renderPayments();
+  }
+
+  /* ---------- Modal + toast ---------- */
+  var modalYes = null, lastFocus = null, toastTimer = null;
+  function ask(title, text, yesLabel, onYes) {
+    lastFocus = document.activeElement;
+    byId('modal-title').textContent = title;
+    byId('modal-text').textContent = text;
+    byId('modal-yes').textContent = yesLabel;
+    modalYes = onYes;
+    byId('modal').hidden = false;
+    byId('modal-yes').focus();
+  }
+  function closeModal() {
+    byId('modal').hidden = true;
+    modalYes = null;
+    if (lastFocus && lastFocus.focus && document.body.contains(lastFocus)) lastFocus.focus();
+  }
+  function toast(msg) {
+    var t = byId('toast');
+    t.textContent = msg;
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.textContent = ''; }, 4500);
+  }
+
+  /* ---------- Actions ---------- */
+  function reportPaid(billId, who) {
+    var b = billById(billId), s = b && shareOf(b, who);
+    if (!s || s.st !== 'unpaid' || who !== state.me) return;
+    ask('Did you pay ' + b.payer + ' ' + eur(s.c) + '?',
+      'This is for ' + billLabel(b) + ' (' + fmtDate(b.date, true) + '). After this, ' + b.payer + ' needs to confirm they got it. Demo only: no real money moves.',
+      'Yes, I paid',
+      function () {
+        s.st = 'awaiting'; save(); render();
+        toast('Done. ' + b.payer + ' will be asked to confirm ' + eur(s.c) + '.');
+      });
+  }
+  function confirmReceived(billId, who) {
+    var b = billById(billId), s = b && shareOf(b, who);
+    if (!s || s.st !== 'awaiting' || b.payer !== state.me) return;
+    ask('Did ' + who + ' pay you ' + eur(s.c) + '?',
+      'This is for ' + billLabel(b) + ' (' + fmtDate(b.date, true) + '). Only tap Yes if the money arrived.',
+      'Yes, I got it',
+      function () {
+        s.st = 'paid'; save(); render();
+        toast('Marked as paid. ' + who + '\'s balance is updated.');
+      });
+  }
+  function resetDemo() {
+    ask('Reset the demo?', 'This brings back the example bills and sets the page to Sam. Your changes will be lost.', 'Yes, reset',
+      function () {
+        state = sampleState(); payFilter = 'unpaid'; showAllBills = false;
+        save(); closeForm(); byId('add-ok').textContent = ''; byId('join-msg').textContent = '';
+        render(); toast('Demo reset. You are Sam again.');
+        window.scrollTo(0, 0);
+      });
+  }
+
+  /* ---------- Add-a-bill form ---------- */
+  function buildFormControls() {
+    var h = '';
+    for (var i = 0; i < TYPES.length; i++) {
+      h += '<label class="choice"><input type="radio" name="f-type" value="' + TYPES[i] + '">' + svg(ICONS[TYPES[i]]) + '<span>' + TYPES[i] + '</span></label>';
+    }
+    byId('type-grid').innerHTML = h;
+    h = '';
+    for (i = 0; i < PEOPLE.length; i++) {
+      h += '<label class="choice"><input type="checkbox" name="f-share" value="' + PEOPLE[i] + '" checked>' + avatar(PEOPLE[i]) + '<span>' + PEOPLE[i] + '</span></label>';
+    }
+    byId('share-checks').innerHTML = h;
+  }
+  function formValues() {
+    var f = byId('bill-form'), type = '', shared = [], i;
+    var radios = f.querySelectorAll('input[name="f-type"]');
+    for (i = 0; i < radios.length; i++) if (radios[i].checked) type = radios[i].value;
+    var checks = f.querySelectorAll('input[name="f-share"]');
+    for (i = 0; i < checks.length; i++) if (checks[i].checked) shared.push(checks[i].value);
+    return {
+      type: type,
+      note: byId('f-note').value.replace(/^\s+|\s+$/g, '').slice(0, 30),
+      amount: parseAmount(byId('f-amount').value),
+      payer: byId('f-payer').value,
+      date: byId('f-date').value,
+      shared: shared
+    };
+  }
+  function syncChoices() {
+    var inputs = byId('bill-form').querySelectorAll('.choice input');
+    for (var i = 0; i < inputs.length; i++) inputs[i].parentNode.className = 'choice' + (inputs[i].checked ? ' on' : '');
+    byId('note-field').hidden = formValues().type !== 'Other';
+  }
+  function updatePreview() {
+    var v = formValues(), box = byId('preview');
+    if (!v.amount.cents || !v.shared.length) { box.innerHTML = ''; return; }
+    var shares = split(v.amount.cents, v.shared, v.payer);
+    var owers = [], same = true;
+    for (var i = 0; i < shares.length; i++) if (shares[i].who !== v.payer) owers.push(shares[i]);
+    if (!owers.length) { box.innerHTML = 'Nobody else shares this bill, so nobody owes ' + esc(v.payer) + '.'; return; }
+    for (i = 1; i < owers.length; i++) if (owers[i].c !== owers[0].c) same = false;
+    var names = [];
+    for (i = 0; i < owers.length; i++) names.push(owers[i].who);
+    var h = '<b>The split:</b> ';
+    if (same) h += joinNames(names) + (owers.length === 1 ? ' owes ' : ' will each owe ') + v.payer + ' ' + eur(owers[0].c) + '.';
+    else {
+      h += 'Shares differ by 1 cent so the total adds up exactly.<ul>';
+      for (i = 0; i < owers.length; i++) h += '<li>' + owers[i].who + ' owes ' + v.payer + ' ' + eur(owers[i].c) + '</li>';
+      h += '</ul>';
+    }
+    var own = null;
+    for (i = 0; i < shares.length; i++) if (shares[i].who === v.payer) own = shares[i];
+    h += own ? '<br>' + v.payer + '\'s own share is ' + eur(own.c) + '.' : '<br>' + v.payer + ' does not share this bill.';
+    box.innerHTML = h;
+  }
+  function setErr(id, fsId, msg) {
+    byId(id).textContent = msg;
+    byId(fsId).className = 'field' + (msg ? ' has-err' : '');
+  }
+  function submitBill(e) {
+    e.preventDefault();
+    var v = formValues(), first = null;
+    var amountMsg = { empty: 'Type the total amount, for example 85.50.', bad: 'Use numbers only, for example 85.50.', zero: 'The amount must be more than €0.', big: 'That is too big. The most is €5,000.' };
+    setErr('err-type', 'fs-type', v.type ? '' : 'Choose what the bill is for.');
+    if (!v.type) first = first || byId('type-grid').querySelector('input');
+    setErr('err-amount', 'fs-amount', v.amount.err ? amountMsg[v.amount.err] : '');
+    if (v.amount.err) first = first || byId('f-amount');
+    setErr('err-date', 'fs-date', v.date ? '' : 'Choose the date of the bill.');
+    if (!v.date) first = first || byId('f-date');
+    var sharedMsg = '';
+    if (!v.shared.length) sharedMsg = 'Tick at least one person who shares this bill.';
+    else if (v.shared.length === 1 && v.shared[0] === v.payer) sharedMsg = 'Tick at least one person other than ' + v.payer + '. Otherwise nobody owes anything.';
+    setErr('err-shared', 'fs-shared', sharedMsg);
+    if (sharedMsg) first = first || byId('share-checks').querySelector('input');
+    if (first) { first.focus(); return; }
+
+    var bill = makeBill(state.nextId++, v.type, v.type === 'Other' ? v.note : '', v.amount.cents, v.payer, v.date, v.shared, {});
+    state.bills.push(bill);
+    save();
+    showAllBills = false;
+    render();
+    var owers = [];
+    for (var i = 0; i < bill.shares.length; i++) if (bill.shares[i].who !== bill.payer) owers.push(bill.shares[i].who);
+    var msg = billLabel(bill) + ' bill of ' + eur(bill.total) + ' added. ' + joinNames(owers) + (owers.length === 1 ? ' now owes ' : ' now owe ') + bill.payer + ' money. All balances are updated.';
+    closeForm();
+    byId('add-ok').textContent = msg;
+    toast('Bill added. Balances updated.');
+    byId('add').scrollIntoView();
+  }
+  function openForm() {
+    var f = byId('bill-form');
+    if (f.hidden) {
+      f.reset();
+      buildFormControls();
+      byId('f-payer').value = state.me;
+      byId('f-date').value = todayISO();
+      setErr('err-type', 'fs-type', ''); setErr('err-amount', 'fs-amount', ''); setErr('err-date', 'fs-date', ''); setErr('err-shared', 'fs-shared', '');
+      syncChoices(); updatePreview();
+    }
+    byId('add-ok').textContent = '';
+    f.hidden = false;
+    byId('open-form-btn').hidden = true;
+    byId('add').scrollIntoView();
+    var firstRadio = byId('type-grid').querySelector('input');
+    if (firstRadio) firstRadio.focus();
+  }
+  function closeForm() {
+    byId('bill-form').hidden = true;
+    byId('open-form-btn').hidden = false;
+  }
+
+  /* ---------- Events ---------- */
+  document.addEventListener('click', function (e) {
+    var el = e.target;
+    while (el && el !== document && !(el.getAttribute && el.getAttribute('data-act'))) el = el.parentNode;
+    if (!el || el === document) return;
+    var act = el.getAttribute('data-act');
+    var id = parseInt(el.getAttribute('data-bill'), 10), who = el.getAttribute('data-who');
+    if (act === 'paid') reportPaid(id, who);
+    else if (act === 'confirm') confirmReceived(id, who);
+    else if (act === 'reset') resetDemo();
+    else if (act === 'open-form') openForm();
+    else if (act === 'close-form') { closeForm(); byId('open-form-btn').focus(); }
+    else if (act === 'filter') { payFilter = el.getAttribute('data-f'); renderPayments(); }
+    else if (act === 'more-bills') { showAllBills = !showAllBills; renderBills(); }
+    else if (act === 'join') byId('join-msg').textContent = 'You\'re on the list! Welcome to HouseMate.';
+  });
+  byId('me').addEventListener('change', function () {
+    state.me = this.value; save(); render();
+    if (!byId('bill-form').hidden) updatePreview();
+  });
+  byId('bill-form').addEventListener('submit', submitBill);
+  byId('bill-form').addEventListener('change', function () { syncChoices(); updatePreview(); });
+  byId('bill-form').addEventListener('input', updatePreview);
+  byId('modal-yes').addEventListener('click', function () { var fn = modalYes; closeModal(); if (fn) fn(); });
+  byId('modal-no').addEventListener('click', closeModal);
+  byId('modal').addEventListener('click', function (e) { if (e.target === this) closeModal(); });
+  document.addEventListener('keydown', function (e) { if ((e.key === 'Escape' || e.keyCode === 27) && !byId('modal').hidden) closeModal(); });
+
+  render();
+
+  /* Exposed for testing only */
+  window.HouseMate = { split: split, parseAmount: parseAmount, eur: eur, groups: groups, getState: function () { return state; }, sampleState: sampleState };
+})();
+</script>
+</body>
+</html>
