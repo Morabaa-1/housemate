@@ -8,116 +8,138 @@
 <style>
 :root {
   color-scheme: light;
-  --bg: #f6f7f9;
+  --bg: #f5f6f8;
   --card: #ffffff;
   --text: #16181d;
-  --muted: #4a505c;
-  --line: #e2e5ea;
+  --muted: #525866;
+  --line: #e4e7ec;
   --accent: #3f3cbb;
   --accent-dark: #2f2c99;
-  --accent-soft: #eeeefc;
+  --accent-soft: #efeffc;
   --red: #b42318;
   --red-soft: #fef1f0;
   --orange: #a3460a;
   --orange-soft: #fff3e3;
   --green: #067647;
   --green-soft: #e8f8ef;
-  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 2px 8px rgba(16,24,40,.05);
+  --shadow: 0 1px 2px rgba(16,24,40,.05), 0 1px 6px rgba(16,24,40,.04);
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 18px; line-height: 1.55; overflow-wrap: break-word;
+  font-size: 17px; line-height: 1.55; overflow-wrap: break-word;
 }
 h1, h2, h3 { line-height: 1.2; margin: 0; }
 p { margin: 0; }
 button { font: inherit; }
-.wrap { max-width: 880px; margin: 0 auto; padding: 0 16px; }
+.wrap { max-width: 900px; margin: 0 auto; padding: 0 16px; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
+.demo-bar { background: #fff8db; color: #5c4400; border-bottom: 1px solid #f1e3a6; font-size: 14px; font-weight: 600; padding: 8px 0; text-align: center; }
 .top { background: var(--card); border-bottom: 1px solid var(--line); }
-.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; padding-bottom: 12px; }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 21px; }
-.brand svg { width: 40px; height: 40px; flex: none; }
-.demo-bar { background: #fff8db; color: #5c4400; border-bottom: 1px solid #f1e3a6; font-size: 16px; font-weight: 600; padding: 8px 0; text-align: center; }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 10px; padding-bottom: 10px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; }
+.brand svg { width: 36px; height: 36px; flex: none; }
 
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 12px 22px;
-  border-radius: 12px; border: 2px solid transparent; font-weight: 700; font-size: 19px; text-decoration: none; cursor: pointer; line-height: 1.2; text-align: center;
+  display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 11px 20px;
+  border-radius: 12px; border: 2px solid transparent; font-weight: 700; font-size: 16px; text-decoration: none; cursor: pointer; line-height: 1.2; text-align: center; white-space: nowrap;
 }
 .btn.primary { background: var(--accent); color: #fff; }
 .btn.primary:hover { background: var(--accent-dark); }
-.btn.ghost { background: var(--card); color: var(--accent); border-color: #c9c8f0; }
+.btn.ghost { background: var(--card); color: var(--accent); border-color: #cfcef2; }
 .btn.ghost:hover { background: var(--accent-soft); }
-.btn.small { min-height: 48px; padding: 8px 14px; font-size: 17px; }
+.btn.small { padding: 8px 14px; font-size: 15px; }
 
-.hero { padding-top: 40px; padding-bottom: 28px; }
-.hero h1 { font-size: 38px; letter-spacing: -0.5px; }
-.hero .lead { font-size: 21px; color: var(--muted); margin: 14px 0 24px; max-width: 34em; }
-.hero-btns { display: flex; flex-wrap: wrap; gap: 12px; }
-.hero-btns .btn { flex: 1 1 200px; }
-.small-note { color: var(--muted); font-size: 16px; margin-top: 12px; }
+.hero { padding-top: 36px; padding-bottom: 12px; }
+.tag { display: inline-block; background: var(--accent-soft); color: var(--accent-dark); font-weight: 700; font-size: 14px; border-radius: 999px; padding: 4px 12px; margin-bottom: 14px; }
+.hero h1 { font-size: 32px; letter-spacing: -0.5px; }
+.hero .lead { font-size: 18px; color: var(--muted); margin: 12px 0 22px; max-width: 32em; }
+.hero-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.hero-btns .btn { flex: 1 1 180px; }
+.small-note { color: var(--muted); font-size: 14px; margin-top: 12px; }
 
-section { padding: 26px 0; }
-section h2 { font-size: 27px; margin-bottom: 8px; }
-.intro { color: var(--muted); margin-bottom: 18px; max-width: 36em; }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 18px; }
+section.wrap { padding-top: 22px; padding-bottom: 22px; }
+.hero + section.wrap { padding-top: 34px; }
+section h2 { font-size: 23px; margin-bottom: 6px; }
+.intro { color: var(--muted); margin-bottom: 16px; max-width: 34em; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 16px; }
 .cols { display: grid; grid-template-columns: 1fr; gap: 12px; }
 
-.problem li { margin-bottom: 10px; }
-.problem ul { margin: 0; padding-left: 22px; }
+.problem-list { display: grid; gap: 10px; }
+.problem-item { display: flex; gap: 12px; align-items: flex-start; }
+.problem-item .ic { width: 36px; height: 36px; border-radius: 10px; background: var(--red-soft); color: var(--red); display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.problem-item .ic svg { width: 20px; height: 20px; }
+.problem-item h3 { font-size: 17px; margin-bottom: 2px; }
+.problem-item p { color: var(--muted); font-size: 15px; }
 
-.step { display: flex; gap: 14px; align-items: flex-start; }
-.num { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex: none; }
-.step h3 { font-size: 20px; margin-bottom: 4px; }
-.step p { color: var(--muted); }
+.step { display: flex; gap: 12px; align-items: flex-start; }
+.num { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.step h3 { font-size: 17px; margin-bottom: 2px; }
+.step p { color: var(--muted); font-size: 15px; }
 
-/* Example screen */
-.phone { max-width: 380px; margin: 0 auto; }
-.phone .label { font-weight: 700; font-size: 18px; }
-.phone .big { font-size: 44px; font-weight: 800; color: var(--red); line-height: 1.1; margin: 2px 0 12px; }
-.row { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+/* Example screen inside a phone frame */
+.phone { max-width: 320px; margin: 0 auto; border: 8px solid #1d2028; border-radius: 30px; background: var(--bg); padding: 14px 12px; box-shadow: 0 10px 30px rgba(16,24,40,.15); }
+.phone .screen-card { background: #fff; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+.phone .label { font-weight: 700; font-size: 14px; color: var(--muted); }
+.phone .big { font-size: 36px; font-weight: 800; color: var(--red); line-height: 1.1; margin: 2px 0 2px; }
+.phone .owed { display: flex; justify-content: space-between; font-size: 14px; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 8px; }
+.phone .owed b { color: var(--green); }
+.mini-h { font-weight: 800; font-size: 15px; margin-bottom: 2px; }
+.row { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.mini-h + .row { border-top: 0; }
 .row b.r { color: var(--red); }
 .row b.g { color: var(--green); }
-.mini-h { font-weight: 800; margin-top: 12px; }
-.example-note { text-align: center; color: var(--muted); font-size: 16px; margin-top: 10px; }
+.example-note { text-align: center; color: var(--muted); font-size: 14px; margin-top: 10px; }
 
-.pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 4px 12px; font-size: 16px; font-weight: 700; }
+.pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 3px 10px; font-size: 14px; font-weight: 700; white-space: nowrap; }
 .pill-unpaid { background: var(--red-soft); color: var(--red); }
 .pill-awaiting { background: var(--orange-soft); color: var(--orange); }
 .pill-paid { background: var(--green-soft); color: var(--green); }
 .status-list { list-style: none; margin: 0; padding: 0; }
-.status-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 0; border-top: 1px solid var(--line); }
-.status-list li:first-child { border-top: 0; }
-.status-list .pill { flex: none; }
-.status-list span.what { flex: 1 1 200px; }
+.status-list li { padding: 10px 0; border-top: 1px solid var(--line); }
+.status-list li:first-child { border-top: 0; padding-top: 4px; }
+.status-list p { color: var(--muted); font-size: 15px; margin-top: 4px; }
+.card h3.card-title { font-size: 17px; margin-bottom: 8px; }
+.trust-note { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--muted); font-size: 15px; }
 
-.honest ul { margin: 0; padding-left: 22px; }
-.honest li { margin-bottom: 8px; }
+.honest-list { list-style: none; margin: 0; padding: 0; }
+.honest-list li { display: flex; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 16px; }
+.honest-list li:first-child { border-top: 0; padding-top: 0; }
+.honest-list li:last-child { padding-bottom: 0; }
+.honest-list svg { width: 20px; height: 20px; flex: none; color: var(--accent); margin-top: 3px; }
 
-.cta { text-align: center; padding: 28px 18px; }
-.cta p { color: var(--muted); margin: 8px 0 18px; }
-.cta-btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
-.cta-btns .btn { flex: 1 1 200px; max-width: 320px; }
-.cta-msg { margin-top: 16px; font-size: 20px; font-weight: 800; color: var(--green); }
+.cta { text-align: center; padding: 28px 18px; background: var(--accent); border: 0; color: #fff; }
+.cta h2 { color: #fff; }
+.cta p { color: #dedcff; margin: 6px 0 18px; }
+.cta .btn.white { background: #fff; color: var(--accent-dark); min-width: 220px; }
+.cta .btn.white:hover { background: var(--accent-soft); }
+.cta-msg { margin-top: 14px; font-size: 18px; font-weight: 800; color: #fff; }
 .cta-msg:empty { display: none; }
+.cta .alt { margin: 14px 0 0; font-size: 15px; }
+.cta .alt a { color: #fff; font-weight: 700; }
 
-footer { border-top: 1px solid var(--line); background: var(--card); padding: 24px 0 40px; color: var(--muted); font-size: 16px; margin-top: 20px; }
-footer p { margin-bottom: 10px; }
+footer { border-top: 1px solid var(--line); background: var(--card); padding: 22px 0 36px; color: var(--muted); font-size: 14px; margin-top: 8px; }
+footer p { margin-bottom: 8px; }
 footer strong { color: var(--text); }
 
 @media (min-width: 700px) {
-  .hero h1 { font-size: 50px; }
-  .cols.three { grid-template-columns: repeat(3, 1fr); }
-  .cols.two { grid-template-columns: 1fr 1fr; align-items: start; }
+  .hero { padding-top: 56px; }
+  .hero h1 { font-size: 44px; }
   .hero-btns .btn { flex: 0 0 auto; }
+  .cols.three { grid-template-columns: repeat(3, 1fr); }
+  .cols.two { grid-template-columns: 1fr 1fr; align-items: center; gap: 24px; }
+  .problem-list { grid-template-columns: repeat(3, 1fr); }
+  .problem-item { flex-direction: column; }
+  .demo-bar { font-size: 15px; }
 }
 </style>
 </head>
 <body>
 
+<div class="demo-bar"><div class="wrap">Student demo. No real money. All names and amounts are made up.</div></div>
 <header class="top">
   <div class="wrap">
     <span class="brand">
@@ -127,28 +149,35 @@ footer strong { color: var(--text); }
     <a class="btn primary small" href="app.html">Try the demo</a>
   </div>
 </header>
-<div class="demo-bar"><div class="wrap">Student demo. No real money. All names and amounts are made up.</div></div>
 
 <main>
   <div class="wrap hero">
+    <span class="tag">For shared houses</span>
     <h1>Shared bills. No awkward reminders.</h1>
     <p class="lead">Know what you owe, who you owe, and what has been paid. All in one place.</p>
     <div class="hero-btns">
       <a class="btn primary" href="app.html">Try the demo</a>
       <a class="btn ghost" href="#how">How it works</a>
     </div>
-    <p class="small-note">Works on your phone. No sign-up. No app to install.</p>
+    <p class="small-note">Works on your phone. No sign-up. Nothing to install.</p>
   </div>
 
-  <section class="wrap problem" aria-labelledby="problem-title">
+  <section class="wrap" aria-labelledby="problem-title">
     <h2 id="problem-title">The problem</h2>
     <p class="intro">In many shared houses, one person pays the bills. Then they chase everyone on WhatsApp.</p>
-    <div class="card">
-      <ul>
-        <li><b>Nobody is sure what they owe.</b> The numbers are lost in the chat.</li>
-        <li><b>One person does all the work.</b> They do the maths and send the reminders.</li>
-        <li><b>Asking friends for money is awkward.</b> Again and again.</li>
-      </ul>
+    <div class="card problem-list">
+      <div class="problem-item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.4M12 17v.3"/></svg></span>
+        <div><h3>Nobody is sure what they owe</h3><p>The numbers get lost in the chat.</p></div>
+      </div>
+      <div class="problem-item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></svg></span>
+        <div><h3>One person does all the work</h3><p>They do the maths and send the reminders.</p></div>
+      </div>
+      <div class="problem-item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M12 8.5v3M12 13.5v.3"/></svg></span>
+        <div><h3>Asking for money is awkward</h3><p>Again and again, with friends.</p></div>
+      </div>
     </div>
   </section>
 
@@ -164,44 +193,45 @@ footer strong { color: var(--text); }
 
   <section class="wrap" aria-labelledby="see-title">
     <h2 id="see-title">What you see first</h2>
-    <p class="intro">Open HouseMate and you see three answers straight away: how much you owe, who you owe, and who owes you.</p>
+    <p class="intro">Three answers, straight away: how much you owe, who you owe, and who owes you.</p>
     <div class="cols two">
       <div>
-        <div class="card phone" aria-label="Example of the first screen">
-          <p class="label">You owe</p>
-          <p class="big">&euro;93.48</p>
-          <p class="mini-h">Who I owe</p>
-          <div class="row"><span>James</span><b class="r">&euro;40.68</b></div>
-          <div class="row"><span>Alex</span><b class="r">&euro;25.30</b></div>
-          <div class="row"><span>Maria</span><b class="r">&euro;18.50</b></div>
-          <div class="row"><span>Emma</span><b class="r">&euro;9.00</b></div>
-          <p class="mini-h">Who owes me</p>
-          <div class="row"><span>Maria</span><b class="g">&euro;12.00</b></div>
-          <div class="row"><span>James</span><b class="g">&euro;12.00</b></div>
-          <div class="row"><span>Emma</span><b class="g">&euro;12.00</b></div>
+        <div class="phone" role="img" aria-label="Example: Sam owes 93 euro 48 in total. Sam owes James 40.68, Alex 25.30, Maria 18.50 and Emma 9.00. People owe Sam 36 euro.">
+          <div class="screen-card">
+            <p class="label">You owe</p>
+            <p class="big">&euro;93.48</p>
+            <p class="owed"><span>People owe you</span><b>&euro;36.00</b></p>
+          </div>
+          <div class="screen-card">
+            <p class="mini-h">Who I owe</p>
+            <div class="row"><span>James</span><b class="r">&euro;40.68</b></div>
+            <div class="row"><span>Alex</span><b class="r">&euro;25.30</b></div>
+            <div class="row"><span>Maria</span><b class="r">&euro;18.50</b></div>
+            <div class="row"><span>Emma</span><b class="r">&euro;9.00</b></div>
+          </div>
         </div>
         <p class="example-note">Example: Sam's screen in the demo.</p>
       </div>
       <div class="card">
-        <h3 style="margin-bottom:10px">Every payment has a clear status</h3>
+        <h3 class="card-title">Every payment has a clear status</h3>
         <ul class="status-list">
-          <li><span class="pill pill-unpaid">Not paid</span><span class="what">Nobody has paid yet.</span></li>
-          <li><span class="pill pill-awaiting">Awaiting confirmation</span><span class="what">You said you paid. Waiting for the other person to check.</span></li>
-          <li><span class="pill pill-paid">Paid</span><span class="what">The person who paid the bill got the money.</span></li>
+          <li><span class="pill pill-unpaid">Not paid</span><p>Nobody has paid yet.</p></li>
+          <li><span class="pill pill-awaiting">Awaiting confirmation</span><p>You said you paid. The other person needs to check.</p></li>
+          <li><span class="pill pill-paid">Paid</span><p>The person who paid the bill got the money.</p></li>
         </ul>
-        <p style="margin-top:12px;color:var(--muted)">Every bill shows the sum, so you can see why you owe what you owe.</p>
+        <p class="trust-note">Every bill shows the sum, so you can see why you owe what you owe.</p>
       </div>
     </div>
   </section>
 
-  <section class="wrap honest" aria-labelledby="honest-title">
+  <section class="wrap" aria-labelledby="honest-title">
     <h2 id="honest-title">Good to know</h2>
     <div class="card">
-      <ul>
-        <li>This is a student demo. It does not move real money and does not connect to any bank.</li>
-        <li>Your changes stay in your own browser. They do not appear on your housemates' phones.</li>
-        <li>Each bill is tracked on its own. If you and a housemate owe each other, both amounts are shown.</li>
-        <li>You can tap "Reset demo" at any time to start again.</li>
+      <ul class="honest-list">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.7v.3"/></svg><span>This is a student demo. It does not move real money or connect to any bank.</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.7v.3"/></svg><span>Your changes stay in your own browser. They do not appear on your housemates' phones.</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.7v.3"/></svg><span>Each bill is tracked on its own. If you and a housemate owe each other, both amounts are shown.</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.7v.3"/></svg><span>Tap "Reset demo" at any time to start again.</span></li>
       </ul>
     </div>
   </section>
@@ -209,12 +239,10 @@ footer strong { color: var(--text); }
   <section class="wrap" aria-labelledby="join-title">
     <div class="card cta">
       <h2 id="join-title">Want HouseMate for your house?</h2>
-      <p>Try the demo first, then join the list.</p>
-      <div class="cta-btns">
-        <button type="button" class="btn primary" id="join-btn">Join this house</button>
-        <a class="btn ghost" href="app.html">Try the demo</a>
-      </div>
+      <p>No more chasing housemates on WhatsApp.</p>
+      <button type="button" class="btn white" id="join-btn">Join this house</button>
       <p class="cta-msg" id="join-msg" role="status"></p>
+      <p class="alt">Not sure yet? <a href="app.html">Try the demo first</a></p>
     </div>
   </section>
 </main>
